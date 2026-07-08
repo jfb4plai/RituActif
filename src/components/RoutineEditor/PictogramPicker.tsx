@@ -43,7 +43,7 @@ export function PictogramPicker({ libelle, pictoUrl, onSelect }: PictogramPicker
     return (
       <div className="flex items-center gap-2">
         <img src={pictoUrl} alt={libelle} style={{ width: 48, height: 48, objectFit: 'contain' }} />
-        <button type="button" onClick={() => onSelect('', 'arasaac')}>
+        <button type="button" className="plai-btn" onClick={() => onSelect('', 'arasaac')}>
           Changer
         </button>
       </div>
@@ -70,8 +70,9 @@ export function PictogramPicker({ libelle, pictoUrl, onSelect }: PictogramPicker
               onClick={() => onSelect(p.url, 'arasaac')}
               style={{ border: '2px solid var(--border)', borderRadius: 8, padding: 4 }}
               title={p.keywords.join(', ')}
+              aria-label={`Choisir ce pictogramme : ${p.keywords.join(', ')}`}
             >
-              <img src={p.url} alt={p.keywords[0] ?? libelle} style={{ width: 48, height: 48 }} />
+              <img src={p.url} alt="" style={{ width: 48, height: 48 }} />
             </button>
           ))}
         </div>
