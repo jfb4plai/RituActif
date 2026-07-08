@@ -34,8 +34,9 @@ export function GridView({ routine, steps }: GridViewProps) {
             onClick={() => speak(step.libelle)}
             className="flex flex-col items-center gap-1 p-2"
             style={{ border: '1px solid var(--border)', borderRadius: 8 }}
+            aria-label={step.libelle}
           >
-            <img src={step.picto_url} alt={step.libelle} style={{ width: 64, height: 64 }} />
+            <img src={step.picto_url} alt="" style={{ width: 64, height: 64 }} />
             {showText && <span className="text-sm">{step.libelle}</span>}
           </button>
         );
