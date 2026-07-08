@@ -25,24 +25,32 @@ export function Auth() {
       <div className="plai-card">
         <h1 className="font-serif text-xl mb-4">RituActif</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <input
-            className="plai-input"
-            type="email"
-            placeholder="votre.email@ecole.be"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            className="plai-input"
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-          />
-          {error && <div className="plai-error">{error}</div>}
+          <div className="plai-field">
+            <label className="plai-label" htmlFor="email">Email</label>
+            <input
+              id="email"
+              className="plai-input"
+              type="email"
+              placeholder="votre.email@ecole.be"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="plai-field">
+            <label className="plai-label" htmlFor="password">Mot de passe</label>
+            <input
+              id="password"
+              className="plai-input"
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
+          {error && <div className="plai-error" aria-live="polite">{error}</div>}
           <button className="plai-btn" type="submit" disabled={loading}>
             {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer un compte'}
           </button>
