@@ -52,6 +52,7 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
         placeholder='ex: "Range ton banc, prends ton cartable et mets-toi en rang devant la porte."'
         value={text}
         onChange={(e) => setText(e.target.value)}
+        aria-label="Consigne longue à simplifier"
       />
       <button
         className="plai-btn mt-2"
@@ -66,6 +67,7 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
       {candidates.length > 0 && (
         <div className="mt-3">
           <div
+            role="note"
             className="text-xs p-2 rounded border"
             style={{ borderColor: '#e8d5a3', background: '#fdf8ec', color: '#6b5216' }}
           >
@@ -76,8 +78,17 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
           <ul className="flex flex-col gap-2 mt-2">
             {candidates.map((c, index) => (
               <li key={index} className="flex gap-2 items-center">
-                <input className="plai-input" value={c} onChange={(e) => updateCandidate(index, e.target.value)} />
-                <button type="button" onClick={() => removeCandidate(index)} aria-label="Retirer cette étape">
+                <input
+                  className="plai-input"
+                  value={c}
+                  onChange={(e) => updateCandidate(index, e.target.value)}
+                  aria-label={`Étape ${index + 1} sur ${candidates.length}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeCandidate(index)}
+                  aria-label={c.trim() ? `Retirer l'étape : ${c}` : 'Retirer cette étape (vide)'}
+                >
                   ✕
                 </button>
               </li>
