@@ -17,3 +17,7 @@ Deno.test("extractSimplifiedText reads the first content block", () => {
 Deno.test("extractSimplifiedText returns empty string when content is missing", () => {
   assertEquals(extractSimplifiedText({}), "");
 });
+
+Deno.test("extractSimplifiedText returns empty string when content is an empty array", () => {
+  assertEquals(extractSimplifiedText({ content: [] }), "");
+});

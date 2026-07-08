@@ -21,6 +21,7 @@ Fondement : Balssa (2024), « FALC et école inclusive » (RISS tel-04807443).`;
 export function buildAnthropicRequestBody(text: string) {
   return {
     model: "claude-sonnet-5",
+    // ~8-10 tokens par étape (≤6 mots + retour ligne, ~1.3-1.5 tokens/mot FR) → 500 tokens ≈ 50-60 étapes, large pour une consigne
     max_tokens: 500,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: text }],
