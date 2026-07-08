@@ -4,7 +4,7 @@ export async function uploadPersoPicto(file: File): Promise<string> {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) throw new Error('Utilisateur non authentifié');
 
-  const ext = file.name.split('.').pop() ?? 'png';
+  const ext = file.name.includes('.') ? file.name.split('.').pop() : 'png';
   const path = `${userData.user.id}/${crypto.randomUUID()}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
