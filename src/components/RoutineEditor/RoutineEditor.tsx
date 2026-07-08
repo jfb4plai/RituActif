@@ -64,6 +64,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
         rattachementType,
         rattachementCodeEleve: rattachementType === 'eleve' ? rattachementCodeEleve : undefined,
         configGrille: typeRendu === 'grille' ? gridConfig : undefined,
+        afficherTexteGlobal,
       });
       await Promise.all(
         steps.map((s, index) =>
@@ -94,8 +95,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
       </button>
 
       <div className="plai-card">
-        <label className="block mb-1 font-medium">Nom de la planche</label>
+        <label htmlFor="routine-nom" className="block mb-1 font-medium">Nom de la planche</label>
         <input
+          id="routine-nom"
           className="plai-input"
           placeholder='ex: "Retour de récré"'
           value={nom}
@@ -105,8 +107,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
           Sert à retrouver cette planche dans votre tableau de bord.
         </p>
 
-        <label className="block mt-4 mb-1 font-medium">Type de rendu</label>
+        <label htmlFor="routine-type-rendu" className="block mt-4 mb-1 font-medium">Type de rendu</label>
         <select
+          id="routine-type-rendu"
           className="plai-input"
           value={typeRendu}
           onChange={(e) => setTypeRendu(e.target.value as RenduType)}
@@ -116,8 +119,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
           <option value="grille">Grille (TLA / mémo-consigne)</option>
         </select>
 
-        <label className="block mt-4 mb-1 font-medium">Rattachement</label>
+        <label htmlFor="routine-rattachement" className="block mt-4 mb-1 font-medium">Rattachement</label>
         <select
+          id="routine-rattachement"
           className="plai-input"
           value={rattachementType}
           onChange={(e) => setRattachementType(e.target.value as RattachementType)}
@@ -128,10 +132,12 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
         {rattachementType === 'eleve' && (
           <>
             <input
+              id="routine-code-eleve"
               className="plai-input mt-2"
               placeholder="ex: Élève-7"
               value={rattachementCodeEleve}
               onChange={(e) => setRattachementCodeEleve(e.target.value)}
+              aria-label="Code élève anonyme"
             />
             <p className="text-xs text-[var(--text3)] mt-1">
               Jamais de nom réel — un code anonyme suffit à retrouver la planche.
@@ -169,6 +175,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   onClick={() => moveStep(index, -1)}
                   disabled={index === 0}
                   aria-label="Déplacer vers le haut"
+                  title="Déplacer vers le haut"
                 >
                   ↑
                 </button>
@@ -177,6 +184,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   onClick={() => moveStep(index, 1)}
                   disabled={index === steps.length - 1}
                   aria-label="Déplacer vers le bas"
+                  title="Déplacer vers le bas"
                 >
                   ↓
                 </button>

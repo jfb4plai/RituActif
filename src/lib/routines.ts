@@ -7,6 +7,7 @@ export async function createRoutine(params: {
   rattachementType: RattachementType;
   rattachementCodeEleve?: string;
   configGrille?: GridConfig;
+  afficherTexteGlobal: boolean;
 }): Promise<Routine> {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) throw new Error('Utilisateur non authentifié');
@@ -20,7 +21,7 @@ export async function createRoutine(params: {
       rattachement_type: params.rattachementType,
       rattachement_code_eleve: params.rattachementCodeEleve ?? null,
       config_grille: params.configGrille ?? null,
-      afficher_texte_global: true,
+      afficher_texte_global: params.afficherTexteGlobal,
     })
     .select()
     .single();
