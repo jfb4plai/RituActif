@@ -21,6 +21,7 @@ export function SequenceView({ routine, steps }: SequenceViewProps) {
               type="checkbox"
               checked={!!checked[step.id]}
               onChange={(e) => setChecked((prev) => ({ ...prev, [step.id]: e.target.checked }))}
+              aria-label={`Étape effectuée : ${step.libelle}`}
             />
             {step.horaire && (
               <span className="text-sm font-medium" style={{ color: 'var(--teal)' }}>
