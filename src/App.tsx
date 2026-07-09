@@ -24,7 +24,7 @@ function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  if (loading) return null;
+  if (loading) return <p aria-live="polite">Chargement...</p>;
   if (!session) return <Auth />;
 
   if (view.name === 'editor') {
