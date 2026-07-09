@@ -7,7 +7,15 @@ export interface Pictogram {
 interface RawPictogram {
   id?: number;
   url?: string;
-  keywords?: string[];
+  keywords?: unknown[];
+}
+
+// ARASAAC's real API returns keyword entries as objects like
+// { type, keyword, hasLocution, plural? } rather than plain strings.
+function extractKeywordStrings(keywords: unknown[]): string[] {
+  return keywords
+    .map((k) => (typeof k === 'string' ? k : (k as { keyword?: unknown })?.keyword))
+    .filter((k): k is string => typeof k === 'string');
 }
 
 export function mapArasaacResponse(json: unknown): Pictogram[] {
@@ -22,7 +30,7 @@ export function mapArasaacResponse(json: unknown): Pictogram[] {
     .map((p) => ({
       id: Number(p.id ?? 0),
       url: String(p.url ?? ''),
-      keywords: Array.isArray(p.keywords) ? p.keywords : [],
+      keywords: Array.isArray(p.keywords) ? extractKeywordStrings(p.keywords) : [],
     }))
     .filter((p) => p.id !== 0 && p.url !== '');
 }
