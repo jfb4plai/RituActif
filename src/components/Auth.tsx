@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
+import { FormField } from './FormField';
 
 export function Auth() {
   const [email, setEmail] = useState('');
@@ -25,31 +26,25 @@ export function Auth() {
       <div className="plai-card">
         <h1 className="font-serif text-xl mb-4">RituActif</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div className="plai-field">
-            <label className="plai-label" htmlFor="email">Email</label>
+          <FormField label="Email" required>
             <input
-              id="email"
               className="plai-input"
               type="email"
               placeholder="votre.email@ecole.be"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
-          </div>
-          <div className="plai-field">
-            <label className="plai-label" htmlFor="password">Mot de passe</label>
+          </FormField>
+          <FormField label="Mot de passe" required>
             <input
-              id="password"
               className="plai-input"
               type="password"
               placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               minLength={6}
             />
-          </div>
+          </FormField>
           {error && <div className="plai-error" aria-live="polite">{error}</div>}
           <button className="plai-btn" type="submit" disabled={loading}>
             {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer un compte'}
