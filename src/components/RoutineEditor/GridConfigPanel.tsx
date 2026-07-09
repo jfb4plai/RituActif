@@ -33,9 +33,9 @@ export function GridConfigPanel({ value, onChange }: GridConfigPanelProps) {
           />
         </FormField>
       </div>
-      <FormField label="Format de page">
+      <FormField label="Format de page" style={{ marginTop: '0.5rem' }}>
         <select
-          className="plai-input mt-2"
+          className="plai-input"
           value={value.pageFormat}
           onChange={(e) => onChange({ ...value, pageFormat: e.target.value as GridConfig['pageFormat'] })}
         >
