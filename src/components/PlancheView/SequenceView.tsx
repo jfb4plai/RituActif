@@ -17,12 +17,14 @@ export function SequenceView({ routine, steps }: SequenceViewProps) {
         const showText = resolveTextVisible(routine.afficher_texte_global, step.afficher_texte_override);
         return (
           <div key={step.id} className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={!!checked[step.id]}
-              onChange={(e) => setChecked((prev) => ({ ...prev, [step.id]: e.target.checked }))}
-              aria-label={`Étape effectuée : ${step.libelle}`}
-            />
+            <label className="flex items-center">
+              <span className="sr-only">{`Étape effectuée : ${step.libelle}`}</span>
+              <input
+                type="checkbox"
+                checked={!!checked[step.id]}
+                onChange={(e) => setChecked((prev) => ({ ...prev, [step.id]: e.target.checked }))}
+              />
+            </label>
             {step.horaire && (
               <span className="text-sm font-medium" style={{ color: 'var(--teal)' }}>
                 {step.horaire}
