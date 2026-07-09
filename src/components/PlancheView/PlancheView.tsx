@@ -21,11 +21,12 @@ export function PlancheView({ routineId, onBack }: PlancheViewProps) {
         setRoutine(routine);
         setSteps(steps);
       })
+      .catch(() => setRoutine(null))
       .finally(() => setLoading(false));
   }, [routineId]);
 
-  if (loading) return <p>Chargement...</p>;
-  if (!routine) return <p>Planche introuvable.</p>;
+  if (loading) return <p aria-live="polite">Chargement...</p>;
+  if (!routine) return <p aria-live="polite">Planche introuvable.</p>;
 
   return (
     <div className="plai-section">
