@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { simplifyConsigne } from '../../lib/falc';
+import { FormField } from '../FormField';
 
 interface FalcSimplifyPanelProps {
   onStepsReady: (libelles: string[]) => void;
@@ -42,18 +43,19 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
   return (
     <div className="plai-card mt-4">
       <h3 className="font-medium mb-1">Simplifier une consigne longue (optionnel)</h3>
-      <p className="text-xs text-[var(--text3)] mb-2">
-        Collez une consigne écrite normalement, elle sera proposée découpée en étapes courtes — à
-        valider ou corriger avant de continuer.
-      </p>
-      <textarea
-        className="plai-input"
-        rows={3}
-        placeholder='ex: "Range ton banc, prends ton cartable et mets-toi en rang devant la porte."'
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        aria-label="Consigne longue à simplifier"
-      />
+      <FormField
+        label="Consigne longue à simplifier"
+        help="Collez une consigne écrite normalement, elle sera proposée découpée en étapes courtes — à valider ou corriger avant de continuer."
+        error={error ?? undefined}
+      >
+        <textarea
+          className="plai-input"
+          rows={3}
+          placeholder='ex: "Range ton banc, prends ton cartable et mets-toi en rang devant la porte."'
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </FormField>
       <button
         className="plai-btn mt-2"
         type="button"
@@ -62,7 +64,6 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
       >
         {loading ? 'Simplification...' : 'Simplifier (inspiré du FALC)'}
       </button>
-      {error && <div className="plai-error mt-2">{error}</div>}
 
       {candidates.length > 0 && (
         <div className="mt-3">
@@ -78,12 +79,13 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
           <ul className="flex flex-col gap-2 mt-2">
             {candidates.map((c, index) => (
               <li key={index} className="flex gap-2 items-center">
-                <input
-                  className="plai-input"
-                  value={c}
-                  onChange={(e) => updateCandidate(index, e.target.value)}
-                  aria-label={`Étape ${index + 1} sur ${candidates.length}`}
-                />
+                <FormField label={`Étape ${index + 1} sur ${candidates.length}`} style={{ marginBottom: 0, flex: 1 }}>
+                  <input
+                    className="plai-input"
+                    value={c}
+                    onChange={(e) => updateCandidate(index, e.target.value)}
+                  />
+                </FormField>
                 <button
                   type="button"
                   onClick={() => removeCandidate(index)}
