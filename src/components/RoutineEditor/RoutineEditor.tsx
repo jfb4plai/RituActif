@@ -4,6 +4,7 @@ import type { RenduType, RattachementType, GridConfig } from '../../lib/types';
 import { FalcSimplifyPanel } from './FalcSimplifyPanel';
 import { StepEditor, type DraftStep } from './StepEditor';
 import { GridConfigPanel } from './GridConfigPanel';
+import { FormField } from '../FormField';
 
 interface RoutineEditorProps {
   onDone: (routineId: string) => void;
@@ -95,54 +96,49 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
       </button>
 
       <div className="plai-card">
-        <label htmlFor="routine-nom" className="block mb-1 font-medium">Nom de la planche</label>
-        <input
-          id="routine-nom"
-          className="plai-input"
-          placeholder='ex: "Retour de récré"'
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-        />
-        <p className="text-xs text-[var(--text3)] mt-1">
-          Sert à retrouver cette planche dans votre tableau de bord.
-        </p>
+        <FormField label="Nom de la planche" help="Sert à retrouver cette planche dans votre tableau de bord.">
+          <input
+            className="plai-input"
+            placeholder='ex: "Retour de récré"'
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+          />
+        </FormField>
 
-        <label htmlFor="routine-type-rendu" className="block mt-4 mb-1 font-medium">Type de rendu</label>
-        <select
-          id="routine-type-rendu"
-          className="plai-input"
-          value={typeRendu}
-          onChange={(e) => setTypeRendu(e.target.value as RenduType)}
-        >
-          <option value="sequentiel">Séquentiel court (routine ponctuelle)</option>
-          <option value="emploi_du_temps">Emploi du temps (avec horaires)</option>
-          <option value="grille">Grille (TLA / mémo-consigne)</option>
-        </select>
+        <FormField label="Type de rendu">
+          <select
+            className="plai-input"
+            value={typeRendu}
+            onChange={(e) => setTypeRendu(e.target.value as RenduType)}
+          >
+            <option value="sequentiel">Séquentiel court (routine ponctuelle)</option>
+            <option value="emploi_du_temps">Emploi du temps (avec horaires)</option>
+            <option value="grille">Grille (TLA / mémo-consigne)</option>
+          </select>
+        </FormField>
 
-        <label htmlFor="routine-rattachement" className="block mt-4 mb-1 font-medium">Rattachement</label>
-        <select
-          id="routine-rattachement"
-          className="plai-input"
-          value={rattachementType}
-          onChange={(e) => setRattachementType(e.target.value as RattachementType)}
-        >
-          <option value="classe">Générique classe</option>
-          <option value="eleve">Élève (code anonyme)</option>
-        </select>
+        <FormField label="Rattachement">
+          <select
+            className="plai-input"
+            value={rattachementType}
+            onChange={(e) => setRattachementType(e.target.value as RattachementType)}
+          >
+            <option value="classe">Générique classe</option>
+            <option value="eleve">Élève (code anonyme)</option>
+          </select>
+        </FormField>
         {rattachementType === 'eleve' && (
-          <>
+          <FormField
+            label="Code élève anonyme"
+            help="Jamais de nom réel — un code anonyme suffit à retrouver la planche."
+          >
             <input
-              id="routine-code-eleve"
-              className="plai-input mt-2"
+              className="plai-input"
               placeholder="ex: Élève-7"
               value={rattachementCodeEleve}
               onChange={(e) => setRattachementCodeEleve(e.target.value)}
-              aria-label="Code élève anonyme"
             />
-            <p className="text-xs text-[var(--text3)] mt-1">
-              Jamais de nom réel — un code anonyme suffit à retrouver la planche.
-            </p>
-          </>
+          </FormField>
         )}
 
         {typeRendu === 'grille' && <GridConfigPanel value={gridConfig} onChange={setGridConfig} />}
