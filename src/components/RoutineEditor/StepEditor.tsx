@@ -1,5 +1,6 @@
 import type { RenduType, PictoSource } from '../../lib/types';
 import { PictogramPicker } from './PictogramPicker';
+import { FormField } from '../FormField';
 
 export interface DraftStep {
   libelle: string;
@@ -20,14 +21,14 @@ interface StepEditorProps {
 export function StepEditor({ step, typeRendu, afficherTexteGlobal, onChange, onRemove }: StepEditorProps) {
   return (
     <div className="flex gap-3 items-start flex-wrap border rounded-lg p-2" style={{ borderColor: 'var(--border)' }}>
-      <input
-        className="plai-input"
-        placeholder='ex: "se laver les mains"'
-        value={step.libelle}
-        onChange={(e) => onChange({ libelle: e.target.value })}
-        aria-label="Libellé de l'étape"
-        style={{ minWidth: 0, flex: '1 1 200px' }}
-      />
+      <FormField label="Libellé de l'étape" style={{ minWidth: 0, flex: '1 1 200px', marginBottom: 0 }}>
+        <input
+          className="plai-input"
+          placeholder='ex: "se laver les mains"'
+          value={step.libelle}
+          onChange={(e) => onChange({ libelle: e.target.value })}
+        />
+      </FormField>
 
       <PictogramPicker
         libelle={step.libelle}
@@ -36,28 +37,30 @@ export function StepEditor({ step, typeRendu, afficherTexteGlobal, onChange, onR
       />
 
       {typeRendu === 'emploi_du_temps' && (
-        <input
-          className="plai-input"
-          type="time"
-          value={step.horaire}
-          onChange={(e) => onChange({ horaire: e.target.value })}
-          aria-label="Heure de cette étape"
-        />
+        <FormField label="Heure de cette étape" style={{ marginBottom: 0 }}>
+          <input
+            className="plai-input"
+            type="time"
+            value={step.horaire}
+            onChange={(e) => onChange({ horaire: e.target.value })}
+          />
+        </FormField>
       )}
 
-      <select
-        className="plai-input"
-        value={step.afficherTexteOverride === null ? 'herite' : step.afficherTexteOverride ? 'oui' : 'non'}
-        onChange={(e) => {
-          const v = e.target.value;
-          onChange({ afficherTexteOverride: v === 'herite' ? null : v === 'oui' });
-        }}
-        aria-label="Affichage du texte pour cette étape"
-      >
-        <option value="herite">Texte : suit le réglage global ({afficherTexteGlobal ? 'affiché' : 'masqué'})</option>
-        <option value="oui">Texte : toujours affiché (travail lexical ciblé)</option>
-        <option value="non">Texte : toujours masqué</option>
-      </select>
+      <FormField label="Affichage du texte pour cette étape" style={{ marginBottom: 0 }}>
+        <select
+          className="plai-input"
+          value={step.afficherTexteOverride === null ? 'herite' : step.afficherTexteOverride ? 'oui' : 'non'}
+          onChange={(e) => {
+            const v = e.target.value;
+            onChange({ afficherTexteOverride: v === 'herite' ? null : v === 'oui' });
+          }}
+        >
+          <option value="herite">Texte : suit le réglage global ({afficherTexteGlobal ? 'affiché' : 'masqué'})</option>
+          <option value="oui">Texte : toujours affiché (travail lexical ciblé)</option>
+          <option value="non">Texte : toujours masqué</option>
+        </select>
+      </FormField>
 
       <button
         type="button"
