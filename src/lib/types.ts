@@ -32,3 +32,23 @@ export interface RoutineStep {
   afficher_texte_override: boolean | null;
   position_grille: number | null;
 }
+
+export type CommunicationCategory = 'personnes' | 'actions' | 'descriptifs' | 'social' | 'objets' | 'sentiments';
+
+export interface CommunicationBoard {
+  id: string;
+  user_id: string;
+  rattachement_code_eleve: string;
+  consentement_valide_at: string | null;
+  created_at: string;
+}
+
+export interface CommunicationItem {
+  id: string;
+  board_id: string;
+  categorie: CommunicationCategory;
+  libelle: string;
+  picto_url: string;
+  picto_source: PictoSource;
+  ordre: number;
+}
