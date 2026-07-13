@@ -30,6 +30,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
 
   const handleRemove = async (itemId: string, libelle: string) => {
     if (!window.confirm(`Supprimer le mot "${libelle}" ?`)) return;
+    setError(null);
     try {
       await removeCommunicationItem(itemId);
       setItems((prev) => prev.filter((i) => i.id !== itemId));
