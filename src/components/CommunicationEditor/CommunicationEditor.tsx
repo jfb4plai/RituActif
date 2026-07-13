@@ -15,6 +15,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
   const [items, setItems] = useState<CommunicationItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<CommunicationCategory>('personnes');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
         setBoard(board);
         setItems(items);
       })
-      .catch((e) => setError(e instanceof Error ? e.message : 'Erreur de chargement'))
+      .catch((e) => setLoadError(e instanceof Error ? e.message : 'Erreur de chargement'))
       .finally(() => setLoading(false));
   }, [boardId]);
 
@@ -38,7 +39,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
   };
 
   if (loading) return <p aria-live="polite">Chargement...</p>;
-  if (error) return <p role="alert">{error}</p>;
+  if (loadError) return <p role="alert">{loadError}</p>;
   if (!board) return <p aria-live="polite">Planche introuvable.</p>;
 
   const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
