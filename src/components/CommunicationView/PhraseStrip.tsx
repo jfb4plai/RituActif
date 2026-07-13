@@ -13,8 +13,8 @@ export function PhraseStrip({ boardId, strip, onClear }: PhraseStripProps) {
   const handleSpeak = () => {
     const phrase = joinPhrase(strip.map((i) => i.libelle));
     if (!phrase) return;
-    speak(phrase);
-    recordPhrase(boardId, phrase).catch(() => {});
+    if (!speak(phrase)) return;
+    recordPhrase(boardId, phrase).catch((e) => console.error('Échec de l\'enregistrement de la phrase', e));
     onClear();
   };
 
@@ -38,6 +38,7 @@ export function PhraseStrip({ boardId, strip, onClear }: PhraseStripProps) {
           onClick={onClear}
           disabled={strip.length === 0}
           aria-label="Effacer la phrase"
+          style={{ padding: '12px 20px', fontSize: 16 }}
         >
           ✕ Effacer
         </button>
@@ -47,12 +48,15 @@ export function PhraseStrip({ boardId, strip, onClear }: PhraseStripProps) {
           onClick={handleSpeak}
           disabled={strip.length === 0}
           aria-label="Dire la phrase"
+          style={{ padding: '12px 20px', fontSize: 16 }}
         >
           🔊 Dire la phrase
         </button>
       </div>
       <span className="sr-only" aria-live="polite">
-        {strip.length}/{MAX_PHRASE_LENGTH} mots dans la bande
+        {strip.length === 0
+          ? ''
+          : `Phrase en cours : ${joinPhrase(strip.map((i) => i.libelle))} (${strip.length}/${MAX_PHRASE_LENGTH} mots)`}
       </span>
     </div>
   );
