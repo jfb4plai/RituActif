@@ -24,6 +24,7 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
   const [error, setError] = useState<string | null>(null);
   const [newBoardCode, setNewBoardCode] = useState('');
   const [creatingBoard, setCreatingBoard] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([listRoutines(), listCommunicationBoards()])
@@ -37,6 +38,7 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
 
   const handleCreateBoard = async () => {
     if (!newBoardCode.trim()) return;
+    setCreateError(null);
     setCreatingBoard(true);
     try {
       const board = await getOrCreateBoard(newBoardCode.trim());
@@ -44,7 +46,7 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
       setNewBoardCode('');
       onOpenCommunication(board.id);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur lors de la création de la planche');
+      setCreateError(e instanceof Error ? e.message : 'Erreur lors de la création de la planche');
     } finally {
       setCreatingBoard(false);
     }
@@ -111,7 +113,14 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
         </ul>
       )}
 
-      <div className="flex gap-2 items-end">
+      {createError && <div className="plai-error">{createError}</div>}
+      <form
+        className="flex gap-2 items-end"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreateBoard();
+        }}
+      >
         <FormField
           label="Code élève anonyme"
           help="Jamais de nom réel — un code anonyme suffit à retrouver la planche."
@@ -124,15 +133,10 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
             onChange={(e) => setNewBoardCode(e.target.value)}
           />
         </FormField>
-        <button
-          className="plai-btn"
-          type="button"
-          disabled={!newBoardCode.trim() || creatingBoard}
-          onClick={handleCreateBoard}
-        >
+        <button className="plai-btn" type="submit" disabled={!newBoardCode.trim() || creatingBoard}>
           {creatingBoard ? 'Création...' : '+ Nouvelle planche de communication'}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
