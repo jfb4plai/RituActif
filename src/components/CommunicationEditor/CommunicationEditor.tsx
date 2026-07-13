@@ -39,9 +39,36 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
     }
   };
 
-  if (loading) return <p aria-live="polite">Chargement...</p>;
-  if (loadError) return <p role="alert">{loadError}</p>;
-  if (!board) return <p aria-live="polite">Planche introuvable.</p>;
+  if (loading) {
+    return (
+      <div className="plai-section">
+        <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
+          ← Retour
+        </button>
+        <p aria-live="polite">Chargement...</p>
+      </div>
+    );
+  }
+  if (loadError) {
+    return (
+      <div className="plai-section">
+        <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
+          ← Retour
+        </button>
+        <p role="alert">{loadError}</p>
+      </div>
+    );
+  }
+  if (!board) {
+    return (
+      <div className="plai-section">
+        <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
+          ← Retour
+        </button>
+        <p aria-live="polite">Planche introuvable.</p>
+      </div>
+    );
+  }
 
   const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
   const nextOrdre = itemsInCategory.length === 0 ? 0 : Math.max(...itemsInCategory.map((i) => i.ordre)) + 1;

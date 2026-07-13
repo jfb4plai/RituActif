@@ -19,12 +19,16 @@ export function CommunicationView({ boardId, onBack }: CommunicationViewProps) {
   const [consenting, setConsenting] = useState(false);
 
   useEffect(() => {
+    setStrip([]);
     getBoardWithItems(boardId)
       .then(({ board, items }) => {
         setBoard(board);
         setItems(items);
       })
-      .catch(() => setBoard(null))
+      .catch((e) => {
+        console.error('Échec de chargement de la planche de communication', e);
+        setBoard(null);
+      })
       .finally(() => setLoading(false));
   }, [boardId]);
 
@@ -43,8 +47,26 @@ export function CommunicationView({ boardId, onBack }: CommunicationViewProps) {
     setStrip((prev) => (prev.length >= MAX_PHRASE_LENGTH ? prev : [...prev, item]));
   };
 
-  if (loading) return <p aria-live="polite">Chargement...</p>;
-  if (!board) return <p aria-live="polite">Planche introuvable.</p>;
+  if (loading) {
+    return (
+      <div className="plai-section">
+        <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
+          ← Retour
+        </button>
+        <p aria-live="polite">Chargement...</p>
+      </div>
+    );
+  }
+  if (!board) {
+    return (
+      <div className="plai-section">
+        <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
+          ← Retour
+        </button>
+        <p aria-live="polite">Planche introuvable.</p>
+      </div>
+    );
+  }
 
   if (!board.consentement_valide_at) {
     return (
