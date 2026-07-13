@@ -27,7 +27,8 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
       .finally(() => setLoading(false));
   }, [boardId]);
 
-  const handleRemove = async (itemId: string) => {
+  const handleRemove = async (itemId: string, libelle: string) => {
+    if (!window.confirm(`Supprimer le mot "${libelle}" ?`)) return;
     try {
       await removeCommunicationItem(itemId);
       setItems((prev) => prev.filter((i) => i.id !== itemId));
@@ -37,10 +38,11 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
   };
 
   if (loading) return <p aria-live="polite">Chargement...</p>;
+  if (error) return <p role="alert">{error}</p>;
   if (!board) return <p aria-live="polite">Planche introuvable.</p>;
 
   const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
-  const nextOrdre = itemsInCategory.length;
+  const nextOrdre = itemsInCategory.length === 0 ? 0 : Math.max(...itemsInCategory.map((i) => i.ordre)) + 1;
 
   return (
     <div className="plai-section">
@@ -54,13 +56,12 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
           Ajoutez des pictos dans chaque catégorie. L'élève les utilisera pour composer des phrases courtes.
         </p>
 
-        <div className="flex gap-2 flex-wrap mb-4" role="tablist">
+        <div className="flex gap-2 flex-wrap mb-4">
           {CATEGORY_ORDER.map((cat) => (
             <button
               key={cat}
               type="button"
-              role="tab"
-              aria-selected={activeCategory === cat}
+              aria-pressed={activeCategory === cat}
               onClick={() => setActiveCategory(cat)}
               className="text-sm"
               style={{
@@ -88,7 +89,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
                 <span>{item.libelle}</span>
                 <button
                   type="button"
-                  onClick={() => handleRemove(item.id)}
+                  onClick={() => handleRemove(item.id, item.libelle)}
                   aria-label={`Supprimer le mot : ${item.libelle}`}
                 >
                   ✕
