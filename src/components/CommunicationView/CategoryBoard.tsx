@@ -19,13 +19,12 @@ export function CategoryBoard({ items, onPick }: CategoryBoardProps) {
 
   return (
     <div className="plai-card mt-3">
-      <div className="flex gap-2 flex-wrap mb-4" role="tablist">
+      <div className="flex gap-2 flex-wrap mb-4">
         {CATEGORY_ORDER.map((cat) => (
           <button
             key={cat}
             type="button"
-            role="tab"
-            aria-selected={activeCategory === cat}
+            aria-pressed={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
             style={{
               padding: '10px 16px',
