@@ -11,14 +11,17 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
   const [candidates, setCandidates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSimplified, setHasSimplified] = useState(false);
 
   const handleSimplify = async () => {
     if (!text.trim()) return;
     setError(null);
+    setHasSimplified(false);
     setLoading(true);
     try {
       const result = await simplifyConsigne(text);
       setCandidates(result);
+      setHasSimplified(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur lors de la simplification');
     } finally {
@@ -38,6 +41,7 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
     onStepsReady(candidates.filter((c) => c.trim().length > 0));
     setCandidates([]);
     setText('');
+    setHasSimplified(false);
   };
 
   return (
@@ -65,6 +69,11 @@ export function FalcSimplifyPanel({ onStepsReady }: FalcSimplifyPanelProps) {
         {loading ? 'Simplification...' : 'Simplifier (inspiré du FALC)'}
       </button>
 
+      {hasSimplified && !loading && !error && candidates.length === 0 && (
+        <p className="text-xs text-[var(--text3)] mt-2" role="status">
+          Aucune étape n'a pu être extraite de ce texte. Essayez de reformuler la consigne.
+        </p>
+      )}
       {candidates.length > 0 && (
         <div className="mt-3">
           <div

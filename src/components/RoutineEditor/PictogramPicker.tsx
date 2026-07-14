@@ -14,6 +14,7 @@ export function PictogramPicker({ libelle, pictoUrl, onSelect }: PictogramPicker
   const [candidates, setCandidates] = useState<Pictogram[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async () => {
     if (!libelle.trim()) return;
@@ -21,6 +22,7 @@ export function PictogramPicker({ libelle, pictoUrl, onSelect }: PictogramPicker
     setLoading(true);
     try {
       setCandidates(await searchPictograms(libelle));
+      setHasSearched(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur de recherche');
     } finally {
@@ -60,7 +62,16 @@ export function PictogramPicker({ libelle, pictoUrl, onSelect }: PictogramPicker
       >
         {loading ? 'Recherche...' : 'Chercher un picto'}
       </button>
-      {error && <div className="plai-error">{error}</div>}
+      {error && (
+        <div className="plai-error" role="alert">
+          {error}
+        </div>
+      )}
+      {hasSearched && !loading && !error && candidates.length === 0 && (
+        <p className="text-xs text-[var(--text3)] mt-2" role="status">
+          Aucun pictogramme trouvé pour « {libelle} ». Essayez un autre mot ou importez une image.
+        </p>
+      )}
       {candidates.length > 0 && (
         <div className="flex gap-2 flex-wrap mt-2">
           {candidates.map((p) => (
