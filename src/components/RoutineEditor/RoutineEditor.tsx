@@ -40,6 +40,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
   };
 
   const removeStep = (index: number) => {
+    const step = steps[index];
+    const label = step.libelle ? `l'étape "${step.libelle}"` : 'cette étape';
+    if (!window.confirm(`Supprimer ${label} ?`)) return;
     setSteps((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -53,7 +56,16 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
     });
   };
 
-  const canGenerate = nom.trim().length > 0 && steps.length > 0 && steps.every((s) => s.pictoUrl);
+  const missingPictoIndex = steps.findIndex((s) => !s.pictoUrl);
+  const disabledReason =
+    nom.trim().length === 0
+      ? 'Donnez un nom à la planche pour continuer.'
+      : steps.length === 0
+        ? 'Ajoutez au moins une étape pour continuer.'
+        : missingPictoIndex !== -1
+          ? `Choisissez un pictogramme pour l'étape ${missingPictoIndex + 1} avant de générer.`
+          : null;
+  const canGenerate = disabledReason === null;
 
   const handleGenerate = async () => {
     setError(null);
@@ -172,6 +184,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   disabled={index === 0}
                   aria-label="Déplacer vers le haut"
                   title="Déplacer vers le haut"
+                  style={{ width: 36, height: 36, fontSize: 16, cursor: 'pointer' }}
                 >
                   ↑
                 </button>
@@ -181,6 +194,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   disabled={index === steps.length - 1}
                   aria-label="Déplacer vers le bas"
                   title="Déplacer vers le bas"
+                  style={{ width: 36, height: 36, fontSize: 16, cursor: 'pointer' }}
                 >
                   ↓
                 </button>
@@ -205,6 +219,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
       <button className="plai-btn mt-4" type="button" disabled={!canGenerate || saving} onClick={handleGenerate}>
         {saving ? 'Génération...' : 'Générer la planche'}
       </button>
+      {disabledReason && !saving && (
+        <p className="text-xs text-[var(--text3)] mt-1">{disabledReason}</p>
+      )}
     </div>
   );
 }

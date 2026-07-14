@@ -26,13 +26,18 @@ export function SequenceView({ routine, steps }: SequenceViewProps) {
               />
             </label>
             {step.horaire && (
-              <span className="text-sm font-medium" style={{ color: 'var(--teal)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--teal-text)' }}>
                 {step.horaire}
               </span>
             )}
             <img src={step.picto_url} alt={step.libelle} style={{ width: 56, height: 56 }} />
             {showText && <span>{step.libelle}</span>}
-            <button type="button" onClick={() => speak(step.libelle)} aria-label={`Écouter : ${step.libelle}`}>
+            <button
+              type="button"
+              onClick={() => speak(step.libelle)}
+              aria-label={`Écouter : ${step.libelle}`}
+              style={{ width: 44, height: 44, fontSize: 20, cursor: 'pointer' }}
+            >
               🔊
             </button>
           </div>

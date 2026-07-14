@@ -1,10 +1,14 @@
+// src/components/Dashboard.tsx
 import { useEffect, useState } from 'react';
 import { listRoutines } from '../lib/routines';
-import type { Routine } from '../lib/types';
+import { listCommunicationBoards, getOrCreateBoard } from '../lib/communication';
+import type { Routine, CommunicationBoard } from '../lib/types';
+import { FormField } from './FormField';
 
 interface DashboardProps {
   onCreateNew: () => void;
   onOpenRoutine: (routineId: string) => void;
+  onOpenCommunication: (boardId: string) => void;
 }
 
 const RENDU_LABELS: Record<Routine['type_rendu'], string> = {
@@ -13,17 +17,40 @@ const RENDU_LABELS: Record<Routine['type_rendu'], string> = {
   grille: 'Grille (TLA / mémo-consigne)',
 };
 
-export function Dashboard({ onCreateNew, onOpenRoutine }: DashboardProps) {
+export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: DashboardProps) {
   const [routines, setRoutines] = useState<Routine[]>([]);
+  const [boards, setBoards] = useState<CommunicationBoard[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newBoardCode, setNewBoardCode] = useState('');
+  const [creatingBoard, setCreatingBoard] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
-    listRoutines()
-      .then(setRoutines)
+    Promise.all([listRoutines(), listCommunicationBoards()])
+      .then(([routinesData, boardsData]) => {
+        setRoutines(routinesData);
+        setBoards(boardsData);
+      })
       .catch((e) => setError(e instanceof Error ? e.message : 'Erreur de chargement'))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleCreateBoard = async () => {
+    if (!newBoardCode.trim()) return;
+    setCreateError(null);
+    setCreatingBoard(true);
+    try {
+      const board = await getOrCreateBoard(newBoardCode.trim());
+      setBoards((prev) => (prev.some((b) => b.id === board.id) ? prev : [board, ...prev]));
+      setNewBoardCode('');
+      onOpenCommunication(board.id);
+    } catch (e) {
+      setCreateError(e instanceof Error ? e.message : 'Erreur lors de la création de la planche');
+    } finally {
+      setCreatingBoard(false);
+    }
+  };
 
   return (
     <div className="plai-section">
@@ -60,6 +87,56 @@ export function Dashboard({ onCreateNew, onOpenRoutine }: DashboardProps) {
           ))}
         </ul>
       )}
+
+      <h2 className="font-serif text-lg mt-8 mb-2">Communication</h2>
+      <p className="text-xs text-[var(--text3)] mb-3">
+        Une planche par élève, pour qu'il compose lui-même des phrases courtes en pictogrammes.
+      </p>
+
+      {!loading && boards.length === 0 && (
+        <div className="plai-empty">Aucune planche de communication pour l'instant.</div>
+      )}
+
+      {boards.length > 0 && (
+        <ul className="flex flex-col gap-2 mb-4">
+          {boards.map((b) => (
+            <li key={b.id} className="plai-card">
+              <button
+                type="button"
+                onClick={() => onOpenCommunication(b.id)}
+                style={{ all: 'unset', cursor: 'pointer', display: 'block', width: '100%' }}
+              >
+                <strong>{b.rattachement_code_eleve}</strong>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {createError && <div className="plai-error">{createError}</div>}
+      <form
+        className="flex gap-2 items-end"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreateBoard();
+        }}
+      >
+        <FormField
+          label="Code élève anonyme"
+          help="Jamais de nom réel — un code anonyme suffit à retrouver la planche."
+          style={{ marginBottom: 0, flex: 1 }}
+        >
+          <input
+            className="plai-input"
+            placeholder="ex: Élève-7"
+            value={newBoardCode}
+            onChange={(e) => setNewBoardCode(e.target.value)}
+          />
+        </FormField>
+        <button className="plai-btn" type="submit" disabled={!newBoardCode.trim() || creatingBoard}>
+          {creatingBoard ? 'Création...' : '+ Nouvelle planche de communication'}
+        </button>
+      </form>
     </div>
   );
 }
