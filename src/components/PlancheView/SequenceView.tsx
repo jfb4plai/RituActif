@@ -32,7 +32,12 @@ export function SequenceView({ routine, steps }: SequenceViewProps) {
             )}
             <img src={step.picto_url} alt={step.libelle} style={{ width: 56, height: 56 }} />
             {showText && <span>{step.libelle}</span>}
-            <button type="button" onClick={() => speak(step.libelle)} aria-label={`Écouter : ${step.libelle}`}>
+            <button
+              type="button"
+              onClick={() => speak(step.libelle)}
+              aria-label={`Écouter : ${step.libelle}`}
+              style={{ width: 44, height: 44, fontSize: 20, cursor: 'pointer' }}
+            >
               🔊
             </button>
           </div>
