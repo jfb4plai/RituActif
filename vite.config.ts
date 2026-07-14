@@ -8,7 +8,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
-      'supabase/functions/**',
+      '**/supabase/functions/**',
+      '.claude/**',
     ],
   },
 });
