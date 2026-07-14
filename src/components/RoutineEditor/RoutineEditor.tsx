@@ -40,6 +40,9 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
   };
 
   const removeStep = (index: number) => {
+    const step = steps[index];
+    const label = step.libelle ? `l'étape "${step.libelle}"` : 'cette étape';
+    if (!window.confirm(`Supprimer ${label} ?`)) return;
     setSteps((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -181,6 +184,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   disabled={index === 0}
                   aria-label="Déplacer vers le haut"
                   title="Déplacer vers le haut"
+                  style={{ width: 36, height: 36, fontSize: 16, cursor: 'pointer' }}
                 >
                   ↑
                 </button>
@@ -190,6 +194,7 @@ export function RoutineEditor({ onDone, onCancel }: RoutineEditorProps) {
                   disabled={index === steps.length - 1}
                   aria-label="Déplacer vers le bas"
                   title="Déplacer vers le bas"
+                  style={{ width: 36, height: 36, fontSize: 16, cursor: 'pointer' }}
                 >
                   ↓
                 </button>

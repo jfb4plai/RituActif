@@ -66,6 +66,7 @@ export function StepEditor({ step, typeRendu, afficherTexteGlobal, onChange, onR
         type="button"
         onClick={onRemove}
         aria-label={step.libelle ? `Supprimer l'étape : ${step.libelle}` : 'Supprimer cette étape'}
+        style={{ width: 36, height: 36, fontSize: 16, cursor: 'pointer' }}
       >
         ✕
       </button>

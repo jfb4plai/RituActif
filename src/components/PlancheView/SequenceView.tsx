@@ -26,7 +26,7 @@ export function SequenceView({ routine, steps }: SequenceViewProps) {
               />
             </label>
             {step.horaire && (
-              <span className="text-sm font-medium" style={{ color: 'var(--teal)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--teal-text)' }}>
                 {step.horaire}
               </span>
             )}
