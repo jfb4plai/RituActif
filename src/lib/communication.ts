@@ -1,6 +1,14 @@
 // src/lib/communication.ts
 import { supabase } from './supabase';
-import type { CommunicationBoard, CommunicationItem, CommunicationCategory, PictoSource } from './types';
+import { moveItem } from './reorder';
+import type {
+  CommunicationBoard,
+  CommunicationItem,
+  CommunicationCategory,
+  PictoSource,
+  CommunicationDefaults,
+  CommunicationMode,
+} from './types';
 
 export async function getOrCreateBoard(codeEleve: string): Promise<CommunicationBoard> {
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -92,4 +100,77 @@ export async function recordPhrase(boardId: string, phraseTexte: string): Promis
     .from('ritu_phrases_log')
     .insert({ board_id: boardId, phrase_texte: phraseTexte });
   if (error) throw error;
+}
+
+export async function getDefaults(): Promise<CommunicationDefaults | null> {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) throw new Error('Utilisateur non authentifié');
+
+  const { data, error } = await supabase
+    .from('ritu_communication_defaults')
+    .select('*')
+    .eq('user_id', userData.user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as CommunicationDefaults | null;
+}
+
+export async function upsertDefaults(params: {
+  modeDefaut: CommunicationMode;
+  holdMs: number;
+  selectOnRelease: boolean;
+}): Promise<CommunicationDefaults> {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) throw new Error('Utilisateur non authentifié');
+
+  const { data, error } = await supabase
+    .from('ritu_communication_defaults')
+    .upsert(
+      {
+        user_id: userData.user.id,
+        mode_defaut: params.modeDefaut,
+        hold_ms: params.holdMs,
+        select_on_release: params.selectOnRelease,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id' }
+    )
+    .select()
+    .single();
+  if (error) throw error;
+  return data as CommunicationDefaults;
+}
+
+export async function updateBoardSettings(
+  boardId: string,
+  params: { mode: CommunicationMode | null; holdMs: number | null; selectOnRelease: boolean | null }
+): Promise<CommunicationBoard> {
+  const { data, error } = await supabase
+    .from('ritu_communication_boards')
+    .update({ mode: params.mode, hold_ms: params.holdMs, select_on_release: params.selectOnRelease })
+    .eq('id', boardId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as CommunicationBoard;
+}
+
+export async function persistReorder(
+  itemsInCategory: CommunicationItem[],
+  itemId: string,
+  direction: 'up' | 'down'
+): Promise<CommunicationItem[]> {
+  const reordered = moveItem(itemsInCategory, itemId, direction);
+  const changed = reordered.filter((item) => {
+    const before = itemsInCategory.find((i) => i.id === item.id);
+    return before && before.ordre !== item.ordre;
+  });
+
+  await Promise.all(
+    changed.map((item) =>
+      supabase.from('ritu_communication_items').update({ ordre: item.ordre }).eq('id', item.id)
+    )
+  );
+
+  return reordered;
 }
