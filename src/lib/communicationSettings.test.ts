@@ -36,4 +36,12 @@ describe('resolveHoldConfig', () => {
     const result = resolveHoldConfig({ hold_ms: null, select_on_release: null }, null);
     expect(result).toEqual({ holdMs: 500, selectOnRelease: false });
   });
+
+  it('preserves an explicit false board override over a truthy classe default', () => {
+    const result = resolveHoldConfig(
+      { hold_ms: null, select_on_release: false },
+      { hold_ms: 700, select_on_release: true }
+    );
+    expect(result).toEqual({ holdMs: 700, selectOnRelease: false });
+  });
 });
