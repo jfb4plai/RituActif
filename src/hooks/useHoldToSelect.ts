@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+// src/hooks/useHoldToSelect.ts
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { createHoldSelectController } from '../lib/holdToSelect';
 import type { HoldConfig } from '../lib/communicationSettings';
 
@@ -19,6 +20,11 @@ export function useHoldToSelect(config: HoldConfig, onConfirm: () => void) {
 
   useEffect(() => () => controller.dispose(), [controller]);
 
+  const onPointerLeave = () => {
+    controller.onPointerLeave();
+    setPressing(false);
+  };
+
   return {
     pressing,
     onPointerDown: () => {
@@ -29,9 +35,13 @@ export function useHoldToSelect(config: HoldConfig, onConfirm: () => void) {
       controller.onPointerUp();
       setPressing(false);
     },
-    onPointerLeave: () => {
-      controller.onPointerLeave();
-      setPressing(false);
+    onPointerLeave,
+    onPointerCancel: onPointerLeave,
+    onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (event.repeat) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      onConfirmRef.current();
     },
   };
 }

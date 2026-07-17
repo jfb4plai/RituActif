@@ -19,7 +19,7 @@ interface PictoButtonProps {
 }
 
 function PictoButton({ item, color, hold, onPick }: PictoButtonProps) {
-  const { pressing, onPointerDown, onPointerUp, onPointerLeave } = useHoldToSelect(hold, () => {
+  const { pressing, onPointerDown, onPointerUp, onPointerLeave, onPointerCancel, onKeyDown } = useHoldToSelect(hold, () => {
     speak(item.libelle);
     onPick(item);
   });
@@ -30,6 +30,8 @@ function PictoButton({ item, color, hold, onPick }: PictoButtonProps) {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerLeave}
+      onPointerCancel={onPointerCancel}
+      onKeyDown={onKeyDown}
       aria-label={`Dire : ${item.libelle}`}
       style={{
         border: `2px solid ${color}`,
