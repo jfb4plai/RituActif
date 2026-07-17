@@ -9,6 +9,7 @@ interface DashboardProps {
   onCreateNew: () => void;
   onOpenRoutine: (routineId: string) => void;
   onOpenCommunication: (boardId: string) => void;
+  onOpenCommunicationDefaults: () => void;
 }
 
 const RENDU_LABELS: Record<Routine['type_rendu'], string> = {
@@ -17,7 +18,12 @@ const RENDU_LABELS: Record<Routine['type_rendu'], string> = {
   grille: 'Grille (TLA / mémo-consigne)',
 };
 
-export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: DashboardProps) {
+export function Dashboard({
+  onCreateNew,
+  onOpenRoutine,
+  onOpenCommunication,
+  onOpenCommunicationDefaults,
+}: DashboardProps) {
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [boards, setBoards] = useState<CommunicationBoard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +94,16 @@ export function Dashboard({ onCreateNew, onOpenRoutine, onOpenCommunication }: D
         </ul>
       )}
 
-      <h2 className="font-serif text-lg mt-8 mb-2">Communication</h2>
+      <div className="flex items-center justify-between mt-8 mb-2">
+        <h2 className="font-serif text-lg">Communication</h2>
+        <button
+          type="button"
+          className="text-sm text-[var(--text3)]"
+          onClick={onOpenCommunicationDefaults}
+        >
+          ⚙ Défaut classe
+        </button>
+      </div>
       <p className="text-xs text-[var(--text3)] mb-3">
         Une planche par élève, pour qu'il compose lui-même des phrases courtes en pictogrammes.
       </p>

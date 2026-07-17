@@ -8,13 +8,15 @@ import { RoutineEditor } from './components/RoutineEditor/RoutineEditor';
 import { PlancheView } from './components/PlancheView/PlancheView';
 import { CommunicationEditor } from './components/CommunicationEditor/CommunicationEditor';
 import { CommunicationView } from './components/CommunicationView/CommunicationView';
+import { CommunicationDefaults } from './components/CommunicationDefaults';
 
 type View =
   | { name: 'dashboard' }
   | { name: 'editor' }
   | { name: 'viewer'; routineId: string }
   | { name: 'communication-editor'; boardId: string }
-  | { name: 'communication-viewer'; boardId: string };
+  | { name: 'communication-viewer'; boardId: string }
+  | { name: 'communication-defaults' };
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -62,11 +64,16 @@ function App() {
     return <CommunicationView boardId={view.boardId} onBack={() => setView({ name: 'dashboard' })} />;
   }
 
+  if (view.name === 'communication-defaults') {
+    return <CommunicationDefaults onBack={() => setView({ name: 'dashboard' })} />;
+  }
+
   return (
     <Dashboard
       onCreateNew={() => setView({ name: 'editor' })}
       onOpenRoutine={(routineId) => setView({ name: 'viewer', routineId })}
       onOpenCommunication={(boardId) => setView({ name: 'communication-editor', boardId })}
+      onOpenCommunicationDefaults={() => setView({ name: 'communication-defaults' })}
     />
   );
 }
