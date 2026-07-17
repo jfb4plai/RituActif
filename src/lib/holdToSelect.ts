@@ -23,6 +23,7 @@ export function createHoldSelectController(
 
   return {
     onPointerDown() {
+      if (pressed) return;
       pressed = true;
       if (config.selectOnRelease) return;
       timer = setTimeout(() => {

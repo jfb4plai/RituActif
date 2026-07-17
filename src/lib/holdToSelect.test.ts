@@ -76,4 +76,16 @@ describe('createHoldSelectController', () => {
 
     expect(onConfirm).not.toHaveBeenCalled();
   });
+
+  it('ignores a second pointerdown while a hold is already pending (no duplicate confirm)', () => {
+    const onConfirm = vi.fn();
+    const controller = createHoldSelectController({ holdMs: 500, selectOnRelease: false }, onConfirm);
+
+    controller.onPointerDown();
+    vi.advanceTimersByTime(200);
+    controller.onPointerDown(); // stray duplicate pointerdown, e.g. from a pointercancel quirk
+    vi.advanceTimersByTime(500);
+
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+  });
 });
