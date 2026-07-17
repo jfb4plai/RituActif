@@ -32,6 +32,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
   const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [movingItemId, setMovingItemId] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getBoardWithItems(boardId), getDefaults()])
@@ -56,9 +57,17 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
   };
 
   const handleMove = async (itemId: string, direction: 'up' | 'down') => {
-    const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
-    const reordered = await persistReorder(itemsInCategory, itemId, direction);
-    setItems((prev) => [...prev.filter((i) => i.categorie !== activeCategory), ...reordered]);
+    setError(null);
+    setMovingItemId(itemId);
+    try {
+      const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
+      const reordered = await persistReorder(itemsInCategory, itemId, direction);
+      setItems((prev) => [...prev.filter((i) => i.categorie !== activeCategory), ...reordered]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Erreur lors du réordonnancement');
+    } finally {
+      setMovingItemId(null);
+    }
   };
 
   const handleModeChange = async (mode: CommunicationMode | 'defaut') => {
@@ -177,7 +186,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
                 <button
                   type="button"
                   onClick={() => handleMove(item.id, 'up')}
-                  disabled={index === 0}
+                  disabled={index === 0 || movingItemId !== null}
                   aria-label={`Déplacer "${item.libelle}" vers le haut`}
                 >
                   ↑
@@ -185,7 +194,7 @@ export function CommunicationEditor({ boardId, onOpenViewer, onBack }: Communica
                 <button
                   type="button"
                   onClick={() => handleMove(item.id, 'down')}
-                  disabled={index === itemsInCategory.length - 1}
+                  disabled={index === itemsInCategory.length - 1 || movingItemId !== null}
                   aria-label={`Déplacer "${item.libelle}" vers le bas`}
                 >
                   ↓
