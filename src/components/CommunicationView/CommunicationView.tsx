@@ -1,10 +1,12 @@
 // src/components/CommunicationView/CommunicationView.tsx
 import { useEffect, useState } from 'react';
-import { getBoardWithItems, markConsentValidated } from '../../lib/communication';
+import { getBoardWithItems, markConsentValidated, getDefaults } from '../../lib/communication';
+import { resolveMode, resolveHoldConfig } from '../../lib/communicationSettings';
 import { MAX_PHRASE_LENGTH } from '../../lib/phrase';
-import type { CommunicationBoard, CommunicationItem } from '../../lib/types';
+import type { CommunicationBoard, CommunicationItem, CommunicationDefaults } from '../../lib/types';
 import { CategoryBoard } from './CategoryBoard';
 import { PhraseStrip } from './PhraseStrip';
+import { LetterboardView } from './LetterboardView';
 
 interface CommunicationViewProps {
   boardId: string;
@@ -14,16 +16,18 @@ interface CommunicationViewProps {
 export function CommunicationView({ boardId, onBack }: CommunicationViewProps) {
   const [board, setBoard] = useState<CommunicationBoard | null>(null);
   const [items, setItems] = useState<CommunicationItem[]>([]);
+  const [defaults, setDefaults] = useState<CommunicationDefaults | null>(null);
   const [strip, setStrip] = useState<CommunicationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [consenting, setConsenting] = useState(false);
 
   useEffect(() => {
     setStrip([]);
-    getBoardWithItems(boardId)
-      .then(({ board, items }) => {
+    Promise.all([getBoardWithItems(boardId), getDefaults()])
+      .then(([{ board, items }, defaults]) => {
         setBoard(board);
         setItems(items);
+        setDefaults(defaults);
       })
       .catch((e) => {
         console.error('Échec de chargement de la planche de communication', e);
@@ -89,13 +93,22 @@ export function CommunicationView({ boardId, onBack }: CommunicationViewProps) {
     );
   }
 
+  const mode = resolveMode(board, defaults);
+  const hold = resolveHoldConfig(board, defaults);
+
   return (
     <div className="plai-section">
       <button type="button" onClick={onBack} className="text-sm text-[var(--text3)] mb-4">
         ← Retour
       </button>
-      <PhraseStrip boardId={board.id} strip={strip} onClear={() => setStrip([])} />
-      <CategoryBoard items={items} onPick={handlePick} />
+      {mode === 'pictogrammes' ? (
+        <>
+          <PhraseStrip boardId={board.id} strip={strip} onClear={() => setStrip([])} />
+          <CategoryBoard items={items} hold={hold} onPick={handlePick} />
+        </>
+      ) : (
+        <LetterboardView boardId={board.id} hold={hold} />
+      )}
     </div>
   );
 }
