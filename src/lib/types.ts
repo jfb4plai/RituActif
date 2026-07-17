@@ -34,6 +34,7 @@ export interface RoutineStep {
 }
 
 export type CommunicationCategory = 'personnes' | 'actions' | 'descriptifs' | 'social' | 'objets' | 'sentiments';
+export type CommunicationMode = 'pictogrammes' | 'letterboard';
 
 export interface CommunicationBoard {
   id: string;
@@ -41,6 +42,9 @@ export interface CommunicationBoard {
   rattachement_code_eleve: string;
   consentement_valide_at: string | null;
   created_at: string;
+  mode: CommunicationMode | null;
+  hold_ms: number | null;
+  select_on_release: boolean | null;
 }
 
 export interface CommunicationItem {
@@ -51,4 +55,12 @@ export interface CommunicationItem {
   picto_url: string;
   picto_source: PictoSource;
   ordre: number;
+}
+
+export interface CommunicationDefaults {
+  user_id: string;
+  mode_defaut: CommunicationMode;
+  hold_ms: number;
+  select_on_release: boolean;
+  updated_at: string;
 }
