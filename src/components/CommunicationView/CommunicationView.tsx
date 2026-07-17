@@ -23,7 +23,13 @@ export function CommunicationView({ boardId, onBack }: CommunicationViewProps) {
 
   useEffect(() => {
     setStrip([]);
-    Promise.all([getBoardWithItems(boardId), getDefaults()])
+    Promise.all([
+      getBoardWithItems(boardId),
+      getDefaults().catch((e) => {
+        console.error('Échec de chargement des réglages par défaut de la classe', e);
+        return null;
+      }),
+    ])
       .then(([{ board, items }, defaults]) => {
         setBoard(board);
         setItems(items);
