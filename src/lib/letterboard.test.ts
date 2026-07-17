@@ -4,11 +4,14 @@ import { ALPHABET_FR, appendChar, backspace, applyCase } from './letterboard';
 
 describe('ALPHABET_FR', () => {
   it('contains the 26 base letters plus the French accented characters', () => {
-    expect(ALPHABET_FR).toHaveLength(37);
+    expect(ALPHABET_FR).toHaveLength(40);
     expect(ALPHABET_FR).toContain('a');
     expect(ALPHABET_FR).toContain('z');
     expect(ALPHABET_FR).toContain('é');
     expect(ALPHABET_FR).toContain('ï');
+    expect(ALPHABET_FR).toContain('œ');
+    expect(ALPHABET_FR).toContain('ë');
+    expect(ALPHABET_FR).toContain('ü');
   });
 });
 
