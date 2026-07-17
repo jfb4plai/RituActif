@@ -1,21 +1,55 @@
 import { useState } from 'react';
 import { speak } from '../../lib/tts';
 import { CATEGORY_ORDER, CATEGORY_META } from '../../lib/categories';
+import { useHoldToSelect } from '../../hooks/useHoldToSelect';
 import type { CommunicationItem, CommunicationCategory } from '../../lib/types';
+import type { HoldConfig } from '../../lib/communicationSettings';
 
 interface CategoryBoardProps {
   items: CommunicationItem[];
+  hold: HoldConfig;
   onPick: (item: CommunicationItem) => void;
 }
 
-export function CategoryBoard({ items, onPick }: CategoryBoardProps) {
-  const [activeCategory, setActiveCategory] = useState<CommunicationCategory>('personnes');
-  const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
+interface PictoButtonProps {
+  item: CommunicationItem;
+  color: string;
+  hold: HoldConfig;
+  onPick: (item: CommunicationItem) => void;
+}
 
-  const handlePick = (item: CommunicationItem) => {
+function PictoButton({ item, color, hold, onPick }: PictoButtonProps) {
+  const { pressing, onPointerDown, onPointerUp, onPointerLeave } = useHoldToSelect(hold, () => {
     speak(item.libelle);
     onPick(item);
-  };
+  });
+
+  return (
+    <button
+      type="button"
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerLeave}
+      aria-label={`Dire : ${item.libelle}`}
+      style={{
+        border: `2px solid ${color}`,
+        borderRadius: 12,
+        padding: 8,
+        background: pressing ? color : 'var(--surface)',
+        cursor: 'pointer',
+        transform: pressing ? 'scale(1.05)' : 'scale(1)',
+        transition: 'transform 100ms, background 100ms',
+      }}
+    >
+      <img src={item.picto_url} alt="" style={{ width: 96, height: 96, objectFit: 'contain' }} />
+      <div className="text-sm mt-1">{item.libelle}</div>
+    </button>
+  );
+}
+
+export function CategoryBoard({ items, hold, onPick }: CategoryBoardProps) {
+  const [activeCategory, setActiveCategory] = useState<CommunicationCategory>('personnes');
+  const itemsInCategory = items.filter((i) => i.categorie === activeCategory);
 
   return (
     <div className="plai-card mt-3">
@@ -45,22 +79,13 @@ export function CategoryBoard({ items, onPick }: CategoryBoardProps) {
       ) : (
         <div className="flex gap-3 flex-wrap">
           {itemsInCategory.map((item) => (
-            <button
+            <PictoButton
               key={item.id}
-              type="button"
-              onClick={() => handlePick(item)}
-              aria-label={`Dire : ${item.libelle}`}
-              style={{
-                border: `2px solid ${CATEGORY_META[activeCategory].color}`,
-                borderRadius: 12,
-                padding: 8,
-                background: 'var(--surface)',
-                cursor: 'pointer',
-              }}
-            >
-              <img src={item.picto_url} alt="" style={{ width: 96, height: 96, objectFit: 'contain' }} />
-              <div className="text-sm mt-1">{item.libelle}</div>
-            </button>
+              item={item}
+              color={CATEGORY_META[activeCategory].color}
+              hold={hold}
+              onPick={onPick}
+            />
           ))}
         </div>
       )}
