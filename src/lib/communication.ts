@@ -166,11 +166,13 @@ export async function persistReorder(
     return before && before.ordre !== item.ordre;
   });
 
-  await Promise.all(
+  const results = await Promise.all(
     changed.map((item) =>
       supabase.from('ritu_communication_items').update({ ordre: item.ordre }).eq('id', item.id)
     )
   );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw failed.error;
 
   return reordered;
 }
