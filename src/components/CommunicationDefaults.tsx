@@ -34,8 +34,10 @@ export function CommunicationDefaults({ onBack }: CommunicationDefaultsProps) {
     setError(null);
     setSaving(true);
     setSaved(false);
+    const clampedHoldMs = Math.min(2000, Math.max(100, holdMs || 500));
     try {
-      await upsertDefaults({ modeDefaut, holdMs, selectOnRelease });
+      await upsertDefaults({ modeDefaut, holdMs: clampedHoldMs, selectOnRelease });
+      setHoldMs(clampedHoldMs);
       setSaved(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur lors de l'enregistrement");
@@ -78,7 +80,10 @@ export function CommunicationDefaults({ onBack }: CommunicationDefaultsProps) {
           <select
             className="plai-input"
             value={modeDefaut}
-            onChange={(e) => setModeDefaut(e.target.value as CommunicationMode)}
+            onChange={(e) => {
+              setModeDefaut(e.target.value as CommunicationMode);
+              setSaved(false);
+            }}
           >
             <option value="pictogrammes">Pictogrammes</option>
             <option value="letterboard">Letterboard</option>
@@ -96,7 +101,10 @@ export function CommunicationDefaults({ onBack }: CommunicationDefaultsProps) {
             max={2000}
             step={50}
             value={holdMs}
-            onChange={(e) => setHoldMs(Number(e.target.value))}
+            onChange={(e) => {
+              setHoldMs(Number(e.target.value));
+              setSaved(false);
+            }}
           />
         </FormField>
 
@@ -107,7 +115,10 @@ export function CommunicationDefaults({ onBack }: CommunicationDefaultsProps) {
           <input
             type="checkbox"
             checked={selectOnRelease}
-            onChange={(e) => setSelectOnRelease(e.target.checked)}
+            onChange={(e) => {
+              setSelectOnRelease(e.target.checked);
+              setSaved(false);
+            }}
           />
         </FormField>
 
