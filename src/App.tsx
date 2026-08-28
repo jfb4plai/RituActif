@@ -21,6 +21,7 @@ type View =
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [passwordRecovery, setPasswordRecovery] = useState(false);
   const [view, setView] = useState<View>({ name: 'dashboard' });
 
   useEffect(() => {
@@ -28,14 +29,17 @@ function App() {
       setSession(data.session);
       setLoading(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'PASSWORD_RECOVERY') setPasswordRecovery(true);
       setSession(newSession);
     });
     return () => listener.subscription.unsubscribe();
   }, []);
 
   if (loading) return <p aria-live="polite">Chargement...</p>;
-  if (!session) return <Auth />;
+  if (!session || passwordRecovery) {
+    return <Auth passwordRecovery={passwordRecovery} onPasswordUpdated={() => setPasswordRecovery(false)} />;
+  }
 
   if (view.name === 'editor') {
     return (
